@@ -794,12 +794,27 @@ export async function init(params) {
     const callAI = async (userText, historyOverride) => {
         const memBlock = memorySummary ? `\nSTORY SO FAR:\n"${memorySummary}"\n` : '';
         const ctxBlock = storyContext ? `\nKEY CONTEXT (always true — never contradict this):\n"${storyContext}"\n` : '';
-        const systemPrompt = `You are ${characterName}. Stay in character at all times.
-${characterDefinition}
-${memBlock}
-User: ${activePersona ? activePersona.name : userDisplayName}.${activePersona?.description ? ` (${activePersona.description})` : ''} Use {{user}} for their name.
-Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaimers or out-of-character text.
-${ctxBlock}`;
+        const userName = activePersona ? activePersona.name : userDisplayName;
+        // Reemplazar los marcadores {{char}} / {{user}} por los nombres reales
+        const fillVars = (s) => (s || '').replace(/\{\{char\}\}/gi, characterName).replace(/\{\{user\}\}/gi, userName);
+        const charInfo = fillVars(characterDefinition || characterDescription);
+        const systemPrompt = `[LITERARY ROLEPLAY] You are ${characterName}, and only ${characterName}. Stay fully in character at all times.
+
+CHARACTER — honor every detail below without deviation:
+${charInfo}
+
+TONE & STYLE — match the vocabulary, rhythm and register of this opening:
+"${fillVars(characterGreeting)}"
+${memBlock}${ctxBlock}
+USER — the person you are talking to goes by ${userName}.${activePersona?.description ? ` About them: ${fillVars(activePersona.description)}.` : ''}
+
+PROSE RULES:
+- SHOW, DON'T TELL: reveal feelings through small actions, body language and subtext — never state them flatly.
+- AUTHENTIC VOICE: keep ${characterName}'s exact personality and way of speaking.
+- FORMAT: spoken dialogue in plain text; actions and inner thoughts wrapped in *asterisks*.
+- LENGTH: keep replies under 150 words; make every word earn its place.
+- Always write clear, coherent, grammatical prose. Never output random words, stray symbols or broken text.
+- OUTPUT ONLY ${characterName}'s response — no disclaimers, no narrating these rules, no out-of-character commentary.`;
 
         const recentHistory = (historyOverride !== undefined ? historyOverride : chatHistory).slice(-RECENT_KEEP);
         const messages = [{ role: 'system', content: systemPrompt }, ...recentHistory];
@@ -830,7 +845,7 @@ ${ctxBlock}`;
             else if (apiSettings.provider === 'openrouter') { endpoint = 'https://openrouter.ai/api/v1/chat/completions'; model = apiSettings.model || 'gryphe/mythomax-l2-13b'; headers['HTTP-Referer'] = window.location.origin; headers['X-Title'] = 'Froggie AI'; }
             else if (apiSettings.provider === 'groq')   { endpoint = 'https://api.groq.com/openai/v1/chat/completions'; model = apiSettings.model || 'llama-3.1-8b-instant'; }
             else if (apiSettings.provider === 'other')  { endpoint = apiSettings.custom_url; model = apiSettings.model || ''; }
-            const response = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify({ model, messages, temperature: 0.85, max_tokens: 400 }) });
+            const response = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify({ model, messages, temperature: 0.7, max_tokens: 400 }) });
             if (!response.ok) { const e = await response.json().catch(()=>({})); throw new Error(e?.error?.message || `HTTP ${response.status}`); }
             const data = await response.json();
             return data.choices?.[0]?.message?.content?.trim() || null;
@@ -1236,13 +1251,27 @@ ${ctxBlock}`;
             if (state?.alternatives.length > 0) state.alternatives[state.index].text = newText;
         }
         try {
-            if (role === 'user') { const msgId = block.dataset.msgid; if (msgId) await _supabase.from('messages').update({ content: newText }).eq('id', msgId); }
-            else {
+            if (role === 'user') {
+                const msgId = block.dataset.msgid;
+                if (msgId) await _supabase.from('messages').update({ content: newText }).eq('id', msgId);
+            } else {
+                // Resolver el id real del mensaje del bot en la base
                 const blockId = block.id;
-                const botMsgId = block.dataset.msgid;
-                if (botMsgId) await _supabase.from('messages').update({ content: newText }).eq('id', botMsgId);
-                else if (blockId && !blockId.startsWith('init_') && !blockId.startsWith('msg_')) await _supabase.from('messages').update({ content: newText }).eq('id', blockId);
-                else if (blockId === currentBotBlockId && currentBotMessageId) await _supabase.from('messages').update({ content: newText }).eq('id', currentBotMessageId);
+                let realId = block.dataset.msgid;
+                if (!realId && blockId && !blockId.startsWith('init_') && !blockId.startsWith('msg_')) realId = blockId;
+                if (!realId && blockId === currentBotBlockId && currentBotMessageId) realId = currentBotMessageId;
+
+                if (realId) {
+                    const state = blockStateMap.get(block.id);
+                    const payload = { content: newText };
+                    // Si el mensaje tiene alternativas (el 1/15), también las guardamos.
+                    // Si no, al recargar mostraría la alternativa vieja, no el texto editado.
+                    if (state && state.alternatives.length > 0) {
+                        payload.alternatives = JSON.stringify(state.alternatives);
+                        payload.alt_index    = state.index;
+                    }
+                    await _supabase.from('messages').update(payload).eq('id', realId);
+                }
             }
         } catch (err) { console.error('Edit save error:', err); }
         cancelEdit(block); rebuildChatHistory();
