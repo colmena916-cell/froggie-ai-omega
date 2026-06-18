@@ -174,15 +174,14 @@ export function render() {
         /* ── Selección y edición ─────────────────────────────── */
         .msg-select-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(201,113,113,0.5); background: var(--bg-main); display: none; align-items: center; justify-content: center; z-index: 5; pointer-events: none; position: absolute; top: 0; right: 0; }
         .msg-select-check svg { width: 11px; height: 11px; fill: white; display: none; }
-        body.delete-mode .msg-block.user { cursor: not-allowed; }
-        body.delete-mode .msg-block.user.deletable { cursor: pointer; }
-        body.delete-mode .msg-block.user.deletable .msg-select-check { display: flex; }
-        body.delete-mode .msg-block.bot.deletable-bot { cursor: pointer; }
-        body.delete-mode .msg-block.user.selected-pair .msg-select-check { background-color: #c97171; border-color: #c97171; }
-        body.delete-mode .msg-block.user.selected-pair .msg-select-check svg { display: block; }
-        body.delete-mode .msg-block.selected-pair::after { content: ''; position: absolute; inset: -6px -4px; border-radius: 10px; background-color: rgba(0,0,0,0.05); border: 2px solid rgba(201,113,113,0.35); pointer-events: none; }
-        body.delete-mode .msg-block.user.deletable:not(.selected-pair):hover::after { content: ''; position: absolute; inset: -6px -4px; border-radius: 10px; border: 2px dashed rgba(201,113,113,0.3); pointer-events: none; }
-        body.delete-mode .msg-block.bot.deletable-bot:not(.selected-pair):hover::after { content: ''; position: absolute; inset: -6px -4px; border-radius: 10px; border: 2px dashed rgba(201,113,113,0.3); pointer-events: none; }
+        body.delete-mode .msg-block { cursor: not-allowed; }
+        body.delete-mode .msg-block.deletable { cursor: pointer; }
+        body.delete-mode .msg-block.deletable .msg-select-check { display: flex; }
+        body.delete-mode .bot-tools { display: none !important; }
+        body.delete-mode .msg-block.selected .msg-select-check { background-color: #c97171; border-color: #c97171; }
+        body.delete-mode .msg-block.selected .msg-select-check svg { display: block; }
+        body.delete-mode .msg-block.selected::after { content: ''; position: absolute; inset: -6px -4px; border-radius: 10px; background-color: rgba(0,0,0,0.05); border: 2px solid rgba(201,113,113,0.35); pointer-events: none; }
+        body.delete-mode .msg-block.deletable:not(.selected):hover::after { content: ''; position: absolute; inset: -6px -4px; border-radius: 10px; border: 2px dashed rgba(201,113,113,0.3); pointer-events: none; }
 
         .msg-edit-btn { display: none; position: absolute; top: 0; right: 0; background: none; border: none; cursor: pointer; color: var(--text-dark); opacity: 0.35; padding: 2px; z-index: 5; transition: opacity 0.2s; }
         .msg-edit-btn:hover { opacity: 1; }
@@ -203,6 +202,30 @@ export function render() {
         .persona-option.active { background: rgba(93,112,56,0.12); border-color: var(--btn-color); }
         .persona-option strong { font-size: 0.95rem; display: block; }
         .persona-option span   { font-size: 0.8rem; opacity: 0.6; display: block; margin-top: 2px; }
+
+        /* Memory modal */
+        #memoryContext, .memory-summary-edit { width:100%; min-height:70px; padding:10px; border:1px solid rgba(62,83,43,0.2); border-radius:8px; background:transparent; color:var(--text-dark); font-family:var(--font-serif); font-size:0.9rem; line-height:1.5; resize:none; outline:none; }
+        #memoryContext:focus, .memory-summary-edit:focus { border-color: var(--btn-color); }
+        .memory-summary-edit { min-height:120px; }
+        .memory-summary-view { font-family: var(--font-serif); font-size: 0.88rem; line-height: 1.55; opacity: 0.8; max-height: 170px; overflow-y: auto; white-space: pre-wrap; padding: 2px 0; }
+        .memory-summary-view:empty::before { content: 'No summary yet — it builds itself as your story grows.'; opacity: 0.5; font-style: italic; }
+
+        /* Chats modal */
+        .new-chat-btn { background: var(--btn-color); color: #fff; border: none; border-radius: 20px; padding: 10px; font-family: var(--font-serif); font-size: 0.92rem; cursor: pointer; width: 100%; }
+        .new-chat-btn:hover { background: var(--btn-hover); }
+        #chatsList { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; margin-top: 4px; }
+        .chat-row { display: flex; align-items: stretch; border: 1px solid rgba(62,83,43,0.2); border-radius: 10px; overflow: hidden; }
+        .chat-row.current { border-color: var(--btn-color); background: rgba(93,112,56,0.10); }
+        .chat-row-open { flex: 1; text-align: left; background: none; border: none; padding: 10px 14px; cursor: pointer; font-family: var(--font-serif); color: var(--text-dark); }
+        .chat-row-open strong { font-size: 0.9rem; display: block; }
+        .chat-row-open span { font-size: 0.78rem; opacity: 0.6; display: block; margin-top: 2px; }
+        .chat-row-del { background: none; border: none; border-left: 1px solid rgba(62,83,43,0.15); padding: 0 14px; cursor: pointer; color: #8b2e2e; opacity: 0.6; display: flex; align-items: center; }
+        .chat-row-del svg { width: 16px; height: 16px; fill: currentColor; }
+        .chat-row-del:hover { opacity: 1; }
+        .chat-row-confirm { display: flex; align-items: center; gap: 8px; padding: 8px 12px; width: 100%; justify-content: space-between; }
+        .chat-row-confirm span { font-size: 0.82rem; opacity: 0.8; }
+        .chat-row-confirm button { font-family: var(--font-serif); font-size: 0.82rem; border-radius: 14px; padding: 5px 12px; cursor: pointer; border: 1px solid rgba(62,83,43,0.2); background: none; color: var(--text-dark); }
+        .chat-row-confirm .yes { background: #8b2e2e; color: #fff; border: none; }
     </style>
 
     <!-- Overlay del dropdown -->
@@ -247,6 +270,14 @@ export function render() {
         <button class="dropdown-btn" id="personaBtn">
             <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
             <span id="personaBtnTxt">Persona: <em>My Profile</em></span>
+        </button>
+        <button class="dropdown-btn" id="memoryBtn">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Memory
+        </button>
+        <button class="dropdown-btn" id="chatsBtn">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            Chats
         </button>
         <button class="dropdown-btn danger" id="deleteMsgBtn">
             <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
@@ -294,6 +325,47 @@ export function render() {
             <div id="personaList"></div>
             <div class="modal-actions" style="margin-top:10px;">
                 <button class="btn-modal-cancel" id="personaCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory modal -->
+    <div class="modal-overlay" id="memoryModal">
+        <div class="modal-box" style="max-width:440px;">
+            <h3>Memory</h3>
+
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <strong style="font-size:0.9rem;font-family:var(--font-serif);">Story context</strong>
+                <p style="font-size:0.82rem;opacity:0.65;line-height:1.45;margin:0;">What should this character never forget? Premise, secrets, relationships. This is always sent to the AI.</p>
+                <textarea id="memoryContext" maxlength="500" placeholder="e.g. {{user}} and Aria are secret lovers; she hides that the curse is killing her."></textarea>
+                <div class="char-counter-modal" id="memoryContextCounter">0 / 500</div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <strong style="font-size:0.9rem;font-family:var(--font-serif);">Memory summary</strong>
+                    <button id="memorySummaryEditBtn" style="background:none;border:none;color:var(--btn-color);font-family:var(--font-serif);font-size:0.82rem;cursor:pointer;padding:0;">Edit</button>
+                </div>
+                <p style="font-size:0.78rem;opacity:0.55;line-height:1.45;margin:0;">The AI keeps this on its own. It uses some tokens, but it keeps your story's memory without letting the cost grow.</p>
+                <div id="memorySummaryView" class="memory-summary-view"></div>
+                <textarea id="memorySummaryEdit" class="memory-summary-edit" style="display:none;" placeholder="Story so far..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" id="memoryCancelBtn">Close</button>
+                <button class="btn-modal-confirm green" id="memorySaveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chats modal -->
+    <div class="modal-overlay" id="chatsModal">
+        <div class="modal-box" style="max-width:440px;">
+            <h3>Chats con este personaje</h3>
+            <button id="newChatBtn" class="new-chat-btn">+ Nuevo chat</button>
+            <div id="chatsList"></div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" id="chatsCancelBtn">Cerrar</button>
             </div>
         </div>
     </div>
@@ -355,12 +427,13 @@ export async function init(params) {
     let characterName = '', characterDescription = '', characterDefinition = '';
     let characterGreeting = '', botPhotoUrl = '', botCreatorId = null;
     let isFavorite = false, userAvatarUrl = '', userDisplayName = 'Me';
-    let activePersona = null;
+    let activePersona = null, defaultPersona = null;
     let chatHistory = [], apiSettings = null, isSending = false;
     let conversationId = null, currentBotBlockId = null, currentBotMessageId = null;
-    let memorySummary = '', summaryCount = 0;
+    let memorySummary = '', summaryCount = 0, storyContext = '';
     const blockStateMap = new Map();
-    const SUMMARY_EVERY = 10, MAX_ALTERNATIVES = 15, RECENT_KEEP = 50, SUMMARIES_MERGE = 5;
+    const SUMMARY_EVERY = 8, MAX_ALTERNATIVES = 15, RECENT_KEEP = 14;
+    const CONTEXT_MAX = 500;
     const ARCHIVE_THRESHOLD = 80, ARCHIVE_BATCH = 10;
 
     // ── Helpers ───────────────────────────────────────────────
@@ -451,7 +524,7 @@ export async function init(params) {
         } catch {}
         try {
             const { data: persona } = await _supabase.from('user_personas').select('id, name, description').eq('user_id', Auth.userId).eq('is_default', true).single();
-            if (persona) { activePersona = persona; document.getElementById('personaBtnTxt').innerHTML = `Persona: <em>${persona.name}</em>`; }
+            if (persona) { activePersona = persona; defaultPersona = persona; document.getElementById('personaBtnTxt').innerHTML = `Persona: <em>${persona.name}</em>`; }
         } catch {}
     };
 
@@ -498,6 +571,7 @@ export async function init(params) {
         div.className = 'msg-block bot';
         div.id = blockId;
         div.innerHTML = `
+            <div class="msg-select-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
             <button class="msg-edit-btn" title="Edit message"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
             <div class="msg-avatar" ${avatarStyle}>${avatarText}</div>
             <div class="msg-body">
@@ -517,6 +591,7 @@ export async function init(params) {
 
         div.querySelector('.msg-edit-btn').onclick = (e) => { e.stopPropagation(); startEdit(div, 'bot'); };
         div.querySelectorAll('.star-btn').forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); rateBotMessage(blockId, parseInt(btn.dataset.n)); }; });
+        div.onclick = () => toggleSelectMessage(div);
         div.getElementById = (id) => div.querySelector(`#${id}`); // no existe en div, usamos document
 
         // Nav arrows
@@ -570,20 +645,50 @@ export async function init(params) {
     };
 
     // ── Cargar historial ──────────────────────────────────────
-    const loadHistory = async () => {
+    const loadHistory = async (targetConvId = null) => {
         const container = document.getElementById('chatScrollArea');
-        document.getElementById('loadingState').style.display = 'none';
-        container.innerHTML = ''; chatHistory = [];
+        // OJO: #loadingState vive DENTRO de #chatScrollArea, así que el primer
+        // container.innerHTML = '' lo borra para siempre. En la 2da llamada (al
+        // crear o cambiar de chat) getElementById devolvía null y .style reventaba
+        // con un TypeError ANTES del try → el cambio de chat se abortaba en silencio.
+        // Por eso "había que refrescar" y no se podía saltar a otro chat.
+        const loadingEl = document.getElementById('loadingState');
+        if (loadingEl) loadingEl.style.display = 'none';
+        const archiveEl = document.getElementById('archiveBanner');
+        if (archiveEl) archiveEl.style.display = 'none';
+        if (container) container.innerHTML = '';
+        chatHistory = []; blockStateMap.clear();
+        currentBotBlockId = currentBotMessageId = null;
+        const COLS = 'id, memory_summary, summary_count, story_context, persona_id';
         try {
-            let { data: conv, error: convErr } = await _supabase.from('conversations').select('id, memory_summary, summary_count').eq('user_id', Auth.userId).eq('character_id', characterId).single();
-            if (convErr || !conv) {
-                const { data: newConv, error: createErr } = await _supabase.from('conversations').insert({ user_id: Auth.userId, character_id: characterId }).select('id, memory_summary, summary_count').single();
+            let conv = null;
+            if (targetConvId) {
+                const { data } = await _supabase.from('conversations').select(COLS).eq('id', targetConvId).single();
+                conv = data;
+            }
+            if (!conv) {
+                const { data } = await _supabase.from('conversations').select(COLS).eq('user_id', Auth.userId).eq('character_id', characterId).order('updated_at', { ascending: false }).limit(1).maybeSingle();
+                conv = data;
+            }
+            if (!conv) {
+                const { data: newConv, error: createErr } = await _supabase.from('conversations').insert({ user_id: Auth.userId, character_id: characterId }).select(COLS).single();
                 if (createErr) throw createErr;
                 conv = newConv;
             }
             conversationId = conv.id;
             memorySummary  = conv.memory_summary || '';
             summaryCount   = conv.summary_count  || 0;
+            storyContext   = conv.story_context  || '';
+
+            // Persona: por defecto la del perfil; si este chat tiene una guardada, manda esa.
+            activePersona = defaultPersona;
+            document.getElementById('personaBtnTxt').innerHTML = `Persona: <em>${defaultPersona ? defaultPersona.name : 'My Profile'}</em>`;
+            if (conv.persona_id) {
+                try {
+                    const { data: convPersona } = await _supabase.from('user_personas').select('id, name, description').eq('id', conv.persona_id).single();
+                    if (convPersona) { activePersona = convPersona; document.getElementById('personaBtnTxt').innerHTML = `Persona: <em>${convPersona.name}</em>`; }
+                } catch {}
+            }
 
             // Cargar solo los últimos 80 mensajes
             const { data: messages, error: msgErr } = await _supabase
@@ -605,7 +710,8 @@ export async function init(params) {
                 blockStateMap.set(gid, { alternatives: [{ text: characterGreeting, rating: 0 }], index: 0, userPrompt: '', historySnapshot: [], generating: false });
                 appendBotMessage(characterGreeting, gid, true);
                 chatHistory.push({ role: 'assistant', content: characterGreeting });
-                await _supabase.from('messages').insert({ conversation_id: conversationId, sender_type: 'bot', sender_name: characterName, content: characterGreeting });
+                const { data: savedGreet } = await _supabase.from('messages').insert({ conversation_id: conversationId, sender_type: 'bot', sender_name: characterName, content: characterGreeting }).select('id').single();
+                if (savedGreet?.id) { const gb = document.getElementById(gid); if (gb) gb.dataset.msgid = savedGreet.id; }
             } else {
                 // Invertir para mostrar del más viejo al más nuevo
                 const ordered = [...messages].reverse();
@@ -687,12 +793,13 @@ export async function init(params) {
     // ── callAI ────────────────────────────────────────────────
     const callAI = async (userText, historyOverride) => {
         const memBlock = memorySummary ? `\nSTORY SO FAR:\n"${memorySummary}"\n` : '';
+        const ctxBlock = storyContext ? `\nKEY CONTEXT (always true — never contradict this):\n"${storyContext}"\n` : '';
         const systemPrompt = `You are ${characterName}. Stay in character at all times.
 ${characterDefinition}
 ${memBlock}
-Tone/style reference: "${characterGreeting}"
 User: ${activePersona ? activePersona.name : userDisplayName}.${activePersona?.description ? ` (${activePersona.description})` : ''} Use {{user}} for their name.
-Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaimers or out-of-character text.`;
+Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaimers or out-of-character text.
+${ctxBlock}`;
 
         const recentHistory = (historyOverride !== undefined ? historyOverride : chatHistory).slice(-RECENT_KEEP);
         const messages = [{ role: 'system', content: systemPrompt }, ...recentHistory];
@@ -763,12 +870,45 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
     };
 
     // ── Enviar mensaje ────────────────────────────────────────
+    // Enviar vacío = el bot continúa la historia solo (como Chai/CAI).
+    const continueStory = async () => {
+        if (!Auth.userId) { UI.showLoginPopup('Join Froggie AI to start chatting!'); return; }
+        if (isSending) return;
+        if (!apiSettings) { document.getElementById('noKeyBanner').classList.add('show'); return; }
+
+        isSending = true; enableInput(false);
+        blockStateMap.forEach((_, bid) => { const t = document.getElementById(`tools_${bid}`); if (t) t.style.display = 'none'; });
+
+        // Turno sintético para que todo proveedor (incl. Gemini) reciba un turno de usuario al final.
+        const contHistory = [...chatHistory, { role: 'user', content: '(Continue the story from where it left off, in character. Do not repeat previous text.)' }];
+
+        document.getElementById('typingIndicator').classList.add('show'); scrollToBottom();
+        const botReply = await callAI('(continue)', contHistory);
+        document.getElementById('typingIndicator').classList.remove('show');
+
+        if (botReply) {
+            const blockId = 'msg_' + Math.random().toString(36).substring(2, 9);
+            blockStateMap.set(blockId, { alternatives: [{ text: botReply, rating: 0 }], index: 0, userPrompt: '(continue)', historySnapshot: contHistory.slice(), generating: false });
+            currentBotBlockId = blockId;
+            appendBotMessage(botReply, blockId, false);
+            chatHistory.push({ role: 'assistant', content: botReply });
+
+            const { data: savedBotMsg } = await _supabase.from('messages').insert({ conversation_id: conversationId, sender_type: 'bot', sender_name: characterName, content: botReply }).select('id').single();
+            currentBotMessageId = savedBotMsg?.id || null;
+            if (currentBotMessageId) { const bb = document.getElementById(blockId); if (bb) bb.dataset.msgid = currentBotMessageId; }
+            await _supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', conversationId);
+
+            if (chatHistory.length > RECENT_KEEP + SUMMARY_EVERY) await generateAndSaveSummary();
+        }
+        isSending = false; enableInput(true);
+    };
+
     const sendMessage = async () => {
         if (!Auth.userId) { UI.showLoginPopup('Join Froggie AI to start chatting!'); return; }
         if (isSending) return;
         const input = document.getElementById('userInput');
         const text  = input.value.trim();
-        if (!text) { return; }
+        if (!text) { return continueStory(); }
         if (!apiSettings) { document.getElementById('noKeyBanner').classList.add('show'); return; }
 
         isSending = true; enableInput(false);
@@ -816,7 +956,7 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
                 });
             } catch {}
 
-            if (chatHistory.length > 60) await generateAndSaveSummary();
+            if (chatHistory.length > RECENT_KEEP + SUMMARY_EVERY) await generateAndSaveSummary();
         }
         isSending = false; enableInput(true);
     };
@@ -908,15 +1048,11 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
         if (toSummarize.length < SUMMARY_EVERY) return;
         const convoBlock    = toSummarize.map(m => `${m.role === 'user' ? 'User' : characterName}: ${m.content}`).join('\n');
         const prevNote      = memorySummary ? `Previous summary:\n"${memorySummary}"\n\n` : '';
-        const summaryPrompt = `${prevNote}New exchanges:\n${convoBlock}\n\nSummarize these exchanges in max 200 words, third person, present tense. You MUST preserve: emotional state of each character, secrets or revelations, tension and conflicts, the exact dynamic between characters, and any significant shift in their relationship. Remove filler but keep subtext intact. Output only the summary text.`;
+        const summaryPrompt = `${prevNote}New exchanges:\n${convoBlock}\n\nSummarize the story so far in max 300 words, third person, present tense. You MUST preserve: emotional state of each character, secrets or revelations, tension and conflicts, the exact dynamic between characters, any significant shift in their relationship, and unresolved threads or pending promises. Remove filler but keep subtext intact. Output only the summary text.`;
         try {
             const result = await callAIRaw(summaryPrompt);
             if (!result) return;
             let finalSummary = result.trim(), finalCount = summaryCount + 1;
-            if (finalCount >= SUMMARIES_MERGE) {
-                const merged = await callAIRaw(`Condense this into a single summary (max 200 words), third person, present tense:\n"${finalSummary}"\nOutput only the summary text.`);
-                if (merged) { finalSummary = merged.trim(); finalCount = 0; }
-            }
             const { error: updateErr } = await _supabase.from('conversations').update({ memory_summary: finalSummary, summary_count: finalCount }).eq('id', conversationId);
             if (updateErr) return;
             memorySummary = finalSummary; summaryCount = finalCount;
@@ -963,34 +1099,39 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
     };
 
     // ── Selección y borrado ───────────────────────────────────
-    let deletableUserBlock = null;
-    let deleteSelectedUserBlock = null, deleteSelectedBotBlock = null;
+    let deleteSelected = new Set();
 
     const updateDeleteConfirmBtn = () => {
         const btn  = document.getElementById('deleteConfirmBtn');
         const hint = document.getElementById('deleteHint');
-        if (deleteSelectedUserBlock) { btn.classList.add('ready'); hint.textContent = 'Exchange will be removed'; }
+        const n = deleteSelected.size;
+        if (n > 0) { btn.classList.add('ready'); hint.textContent = n === 1 ? '1 message will be removed' : `${n} messages will be removed`; }
         else { btn.classList.remove('ready'); hint.textContent = 'Select a message to delete'; }
     };
 
     const updateEditableMarkers = () => {
         document.querySelectorAll('.msg-block.editable-last').forEach(el => el.classList.remove('editable-last'));
-        const userBlocks = document.querySelectorAll('.msg-block.user');
+        const userBlocks = document.querySelectorAll('.msg-block.user:not(.archived-msg)');
         if (userBlocks.length > 0) userBlocks[userBlocks.length - 1].classList.add('editable-last');
-        const botBlocks = document.querySelectorAll('.msg-block.bot');
+        const botBlocks = document.querySelectorAll('.msg-block.bot:not(.archived-msg)');
         if (botBlocks.length > 0) botBlocks[botBlocks.length - 1].classList.add('editable-last');
+    };
+
+    // Los dos últimos mensajes visibles (no archivados) son los accionables.
+    const lastTwoBlocks = () => {
+        const all = [...document.querySelectorAll('.msg-block')].filter(b => !b.classList.contains('archived-msg'));
+        return all.slice(-2);
     };
 
     const enterDeleteMode = () => {
         toggleDropdown();
-        const allUser = document.querySelectorAll('.msg-block.user');
-        deletableUserBlock = allUser.length > 0 ? allUser[allUser.length - 1] : null;
-        if (!deletableUserBlock) return;
+        const targets = lastTwoBlocks();
+        if (targets.length === 0) return;
         document.body.classList.add('delete-mode');
         document.getElementById('inputArea').style.display = 'none';
         document.getElementById('deleteBar').classList.add('show');
-        deleteSelectedUserBlock = null; deleteSelectedBotBlock = null;
-        deletableUserBlock.classList.add('deletable');
+        deleteSelected = new Set();
+        targets.forEach(b => b.classList.add('deletable'));
         updateDeleteConfirmBtn();
     };
 
@@ -998,30 +1139,22 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
         document.body.classList.remove('delete-mode');
         document.getElementById('inputArea').style.display = '';
         document.getElementById('deleteBar').classList.remove('show');
-        document.querySelectorAll('.msg-block.selected-pair, .msg-block.deletable').forEach(el => el.classList.remove('selected-pair', 'deletable'));
-        deleteSelectedUserBlock = deleteSelectedBotBlock = deletableUserBlock = null;
+        document.querySelectorAll('.msg-block.selected, .msg-block.deletable').forEach(el => el.classList.remove('selected', 'deletable'));
+        deleteSelected = new Set();
     };
 
-    const toggleSelectMessage = (userBlock) => {
-        if (!document.body.classList.contains('delete-mode') || userBlock !== deletableUserBlock) return;
-        if (userBlock.classList.contains('selected-pair')) {
-            userBlock.classList.remove('selected-pair');
-            if (deleteSelectedBotBlock) deleteSelectedBotBlock.classList.remove('selected-pair');
-            deleteSelectedUserBlock = deleteSelectedBotBlock = null;
-            updateDeleteConfirmBtn(); return;
-        }
-        userBlock.classList.add('selected-pair'); deleteSelectedUserBlock = userBlock;
-        // También marcar el bot que sigue al usuario seleccionado
-        let next = userBlock.nextElementSibling;
-        while (next && !next.classList.contains('msg-block')) next = next.nextElementSibling;
-        if (next && next.classList.contains('bot')) { next.classList.add('selected-pair'); deleteSelectedBotBlock = next; }
-        else deleteSelectedBotBlock = null;
+    // Selección individual: marca exactamente el mensaje tocado, sin arrastrar al de al lado.
+    const toggleSelectMessage = (block) => {
+        if (!document.body.classList.contains('delete-mode') || !block.classList.contains('deletable')) return;
+        if (block.classList.contains('selected')) { block.classList.remove('selected'); deleteSelected.delete(block); }
+        else { block.classList.add('selected'); deleteSelected.add(block); }
         updateDeleteConfirmBtn();
     };
 
     const rebuildChatHistory = () => {
         chatHistory = [];
         document.querySelectorAll('.msg-block').forEach(block => {
+            if (block.classList.contains('archived-msg')) return;
             const txt = block.querySelector('.msg-text');
             if (!txt) return;
             if (block.classList.contains('user')) chatHistory.push({ role: 'user', content: txt.innerText });
@@ -1029,20 +1162,41 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
         });
     };
 
+    // ID real de un bloque: dataset.msgid (nuevos) o block.id si es un UUID real (cargados).
+    const resolveMsgId = (block) => {
+        if (block.dataset && block.dataset.msgid) return block.dataset.msgid;
+        const id = block.id;
+        if (id && !id.startsWith('msg_') && !id.startsWith('init_') && !id.startsWith('guest_')) return id;
+        return null;
+    };
+
+    // Mostrar las herramientas (estrellas/flechas) solo en el último bot, y refrescarlas.
+    const updateBotToolsVisibility = () => {
+        const botBlocks = [...document.querySelectorAll('.msg-block.bot:not(.archived-msg)')];
+        botBlocks.forEach((b, i) => {
+            const tools = b.querySelector('.bot-tools');
+            if (tools) tools.style.display = (i === botBlocks.length - 1) ? '' : 'none';
+        });
+        const last = botBlocks[botBlocks.length - 1];
+        if (last && last.id) {
+            const st = blockStateMap.get(last.id);
+            if (st) { updateStars(last.id, st.alternatives[st.index]?.rating || 0); updateNavArrows(last.id); }
+        }
+    };
+
     const confirmDeleteSelected = async () => {
-        if (!deleteSelectedUserBlock) return;
+        if (deleteSelected.size === 0) return;
+        const blocks = [...deleteSelected];
         try {
-            const userMsgId = deleteSelectedUserBlock.dataset.msgid;
-            const botMsgId  = deleteSelectedBotBlock ? deleteSelectedBotBlock.dataset.msgid : null;
-            const botBlockId = deleteSelectedBotBlock ? deleteSelectedBotBlock.id : null;
-            if (userMsgId) await _supabase.from('messages').delete().eq('id', userMsgId);
-            if (botMsgId) await _supabase.from('messages').delete().eq('id', botMsgId);
-            else if (botBlockId && botBlockId === currentBotBlockId && currentBotMessageId) await _supabase.from('messages').delete().eq('id', currentBotMessageId);
-            deleteSelectedUserBlock.remove();
-            if (deleteSelectedBotBlock) deleteSelectedBotBlock.remove();
+            for (const block of blocks) {
+                const msgId = resolveMsgId(block);
+                if (msgId) await _supabase.from('messages').delete().eq('id', msgId);
+                if (block.id) blockStateMap.delete(block.id);
+                block.remove();
+            }
             rebuildChatHistory();
         } catch (err) { console.error('Error deleting:', err); }
-        exitDeleteMode(); updateEditableMarkers();
+        exitDeleteMode(); updateEditableMarkers(); updateBotToolsVisibility();
     };
 
     // ── Edición de mensajes ───────────────────────────────────
@@ -1127,6 +1281,9 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
                     activePersona = isNone ? null : p;
                     document.getElementById('personaBtnTxt').innerHTML = `Persona: <em>${isNone ? 'My Profile' : p.name}</em>`;
                     document.getElementById('personaModal').classList.remove('show');
+                    if (conversationId) {
+                        _supabase.from('conversations').update({ persona_id: isNone ? null : p.id }).eq('id', conversationId).then(() => {}, () => {});
+                    }
                 };
                 list.appendChild(btn);
             };
@@ -1140,6 +1297,125 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
                 list.appendChild(hint);
             }
         } catch { list.innerHTML = '<p style="opacity:0.5;font-size:0.85rem;text-align:center;">Could not load personas.</p>'; }
+    };
+
+    // ── Ventana de memoria ────────────────────────────────────
+    const openMemoryModal = () => {
+        toggleDropdown();
+        if (!conversationId) { showSystemMsg('Start chatting to set up memory.', false); return; }
+        const ctxEl  = document.getElementById('memoryContext');
+        const viewEl = document.getElementById('memorySummaryView');
+        const editEl = document.getElementById('memorySummaryEdit');
+        ctxEl.value = storyContext || '';
+        document.getElementById('memoryContextCounter').textContent = `${(storyContext || '').length} / ${CONTEXT_MAX}`;
+        viewEl.textContent = memorySummary || '';
+        viewEl.style.display = 'block';
+        editEl.style.display = 'none';
+        editEl.value = memorySummary || '';
+        document.getElementById('memorySummaryEditBtn').textContent = 'Edit';
+        document.getElementById('memoryModal').classList.add('show');
+    };
+
+    const toggleSummaryEdit = () => {
+        const viewEl = document.getElementById('memorySummaryView');
+        const editEl = document.getElementById('memorySummaryEdit');
+        const btn    = document.getElementById('memorySummaryEditBtn');
+        const editing = editEl.style.display !== 'none';
+        if (editing) { editEl.style.display = 'none'; viewEl.style.display = 'block'; btn.textContent = 'Edit'; }
+        else { editEl.value = memorySummary || ''; editEl.style.display = 'block'; viewEl.style.display = 'none'; btn.textContent = 'Cancel'; }
+    };
+
+    const saveMemory = async () => {
+        const newContext = document.getElementById('memoryContext').value.trim();
+        const editEl = document.getElementById('memorySummaryEdit');
+        const editingSummary = editEl.style.display !== 'none';
+        const updates = { story_context: newContext };
+        if (editingSummary) updates.memory_summary = editEl.value.trim();
+        try {
+            await _supabase.from('conversations').update(updates).eq('id', conversationId);
+            storyContext = newContext;
+            if (editingSummary) memorySummary = editEl.value.trim();
+        } catch (e) { console.error('Memory save error:', e); }
+        document.getElementById('memoryModal').classList.remove('show');
+    };
+
+    // ── Multichat: ventana de chats ────────────────────────────
+    const fmtChatDate = (iso) => {
+        try {
+            const d = new Date(iso);
+            return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        } catch { return 'Chat'; }
+    };
+
+    const renderChatsList = (convs) => {
+        const list = document.getElementById('chatsList');
+        list.innerHTML = '';
+        if (!convs || convs.length === 0) { list.innerHTML = '<p style="opacity:0.5;font-size:0.85rem;text-align:center;padding:8px;">Aún no hay chats.</p>'; return; }
+        convs.forEach(c => {
+            const row = document.createElement('div');
+            row.className = 'chat-row' + (c.id === conversationId ? ' current' : '');
+            const preview = (c.memory_summary || c.story_context || '').trim();
+            const previewTxt = preview ? (preview.length > 70 ? preview.substring(0, 70) + '…' : preview) : 'Chat nuevo';
+            const open = document.createElement('button');
+            open.className = 'chat-row-open';
+            open.innerHTML = `<strong>${fmtChatDate(c.created_at)}${c.id === conversationId ? ' · actual' : ''}</strong><span>${escapeHTML(previewTxt)}</span>`;
+            open.onclick = () => switchToConversation(c.id);
+            const del = document.createElement('button');
+            del.className = 'chat-row-del';
+            del.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+            del.onclick = (e) => { e.stopPropagation(); promptDeleteChat(row, c.id); };
+            row.appendChild(open); row.appendChild(del);
+            list.appendChild(row);
+        });
+    };
+
+    const promptDeleteChat = (row, convId) => {
+        row.innerHTML = `<div class="chat-row-confirm"><span>¿Borrar este chat?</span><div><button class="no">No</button> <button class="yes">Sí</button></div></div>`;
+        row.querySelector('.no').onclick = () => openChatsModal(true);
+        row.querySelector('.yes').onclick = () => deleteChat(convId);
+    };
+
+    const closeAllOverlays = () => {
+        document.getElementById('chatsModal').classList.remove('show');
+        document.getElementById('optionsDropdown').classList.remove('show');
+        document.getElementById('dropdownOverlay').classList.remove('show');
+    };
+
+    const goToChat = async (convId) => {
+        closeAllOverlays();
+        await loadHistory(convId);
+    };
+
+    const deleteChat = async (convId) => {
+        const wasCurrent = (convId === conversationId);
+        try { await _supabase.from('conversations').delete().eq('id', convId); } catch (e) { console.error('delete chat error', e); }
+        if (wasCurrent) { await goToChat(null); }   // carga el más reciente que quede, o crea uno
+        else { openChatsModal(true); }              // refresca la lista sin cerrar
+    };
+
+    const switchToConversation = async (convId) => {
+        if (convId === conversationId) { closeAllOverlays(); return; }
+        await goToChat(convId);
+    };
+
+    const createNewChat = async () => {
+        try {
+            const { data: newConv, error } = await _supabase.from('conversations').insert({ user_id: Auth.userId, character_id: characterId }).select('id').single();
+            if (error || !newConv) { console.error('new chat error', error); return; }
+            await goToChat(newConv.id);
+        } catch (e) { console.error('new chat error', e); }
+    };
+
+    const openChatsModal = async (keepOpen = false) => {
+        if (!keepOpen) toggleDropdown();
+        if (!Auth.userId) return;
+        const list = document.getElementById('chatsList');
+        list.innerHTML = '<p style="opacity:0.5;font-size:0.9rem;text-align:center;padding:8px;">Cargando...</p>';
+        document.getElementById('chatsModal').classList.add('show');
+        try {
+            const { data: convs } = await _supabase.from('conversations').select('id, created_at, memory_summary, story_context').eq('user_id', Auth.userId).eq('character_id', characterId).order('updated_at', { ascending: false });
+            renderChatsList(convs);
+        } catch (e) { list.innerHTML = '<p style="opacity:0.5;font-size:0.85rem;text-align:center;">No se pudieron cargar.</p>'; }
     };
 
     // ═══════════════════════════════════════════════════════════
@@ -1163,6 +1439,14 @@ Rules: Show don't tell. Use *asterisks* for actions. Max 150 words. No disclaime
 
     document.getElementById('editBotBtn').onclick   = () => { toggleDropdown(); Router.go('edit-character', { id: characterId }); };
     document.getElementById('personaBtn').onclick   = openPersonaSelector;
+    document.getElementById('memoryBtn').onclick     = openMemoryModal;
+    document.getElementById('memoryCancelBtn').onclick = () => document.getElementById('memoryModal').classList.remove('show');
+    document.getElementById('memorySaveBtn').onclick = saveMemory;
+    document.getElementById('memorySummaryEditBtn').onclick = toggleSummaryEdit;
+    document.getElementById('memoryContext').oninput = function() { document.getElementById('memoryContextCounter').textContent = `${this.value.length} / ${CONTEXT_MAX}`; };
+    document.getElementById('chatsBtn').onclick      = () => openChatsModal();
+    document.getElementById('chatsCancelBtn').onclick = () => document.getElementById('chatsModal').classList.remove('show');
+    document.getElementById('newChatBtn').onclick    = createNewChat;
     document.getElementById('personaCancelBtn').onclick = () => document.getElementById('personaModal').classList.remove('show');
     document.getElementById('deleteMsgBtn').onclick = enterDeleteMode;
     document.getElementById('deleteCancelBtn').onclick  = exitDeleteMode;
